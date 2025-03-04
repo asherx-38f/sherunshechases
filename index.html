@@ -1,1 +1,186 @@
-<h1>hello world</h1>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>温馨浪漫的凸透镜成像</title>
+    <style>
+        body {
+            background: linear-gradient(to bottom, #a6c1ee, #fbc2eb);
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            text-align: center;
+        }
+
+        #title {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
+            color: #fff;
+        }
+
+        #lens {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 50px;
+            height: 200px;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+        }
+
+        #boy {
+            position: absolute;
+            top: 50%;
+            left: 10%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-image: url('boy.png');
+            background-size: cover;
+            z-index: 1;
+        }
+
+        #girl {
+            position: absolute;
+            top: 50%;
+            right: 10%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background-image: url('girl.png');
+            background-size: cover;
+            z-index: 1;
+        }
+
+        #rays {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        #slider {
+            position: absolute;
+            bottom: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80%;
+        }
+
+        #music-icon {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            width: 30px;
+            height: 30px;
+            background-image: url('music-off.png');
+            background-size: cover;
+            cursor: pointer;
+        }
+
+        audio {
+            display: none;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="container">
+        <div id="title">She Runs,He Chases....</div>
+        <div id="lens"></div>
+        <div id="boy"></div>
+        <div id="girl"></div>
+        <div id="rays"></div>
+        <input type="range" id="slider" min="0" max="100" value="50">
+        <div id="music-icon"></div>
+        <audio id="music" src="music.mp3"></audio>
+    </div>
+
+    <script>
+        const boy = document.getElementById('boy');
+        const girl = document.getElementById('girl');
+        const slider = document.getElementById('slider');
+        const title = document.getElementById('title');
+        const musicIcon = document.getElementById('music-icon');
+        const music = document.getElementById('music');
+
+        let isPlaying = false;
+
+        musicIcon.addEventListener('click', () => {
+            if (isPlaying) {
+                music.pause();
+                musicIcon.style.backgroundImage = "url('music-off.png')";
+            } else {
+                music.play();
+                musicIcon.style.backgroundImage = "url('music-on.png')";
+            }
+            isPlaying = !isPlaying;
+        });
+
+        slider.addEventListener('input', () => {
+            const value = slider.value;
+            const containerWidth = document.getElementById('container').offsetWidth;
+            const lensX = containerWidth / 2;
+            const boyX = (value / 100) * (lensX - 50);
+            boy.style.left = `${boyX}px`;
+
+            // 简单的凸透镜成像原理模拟
+            const focalLength = 100;
+            const objectDistance = lensX - boyX;
+            const imageDistance = (focalLength * objectDistance) / (objectDistance - focalLength);
+            const girlX = lensX + imageDistance;
+            girl.style.left = `${girlX}px`;
+
+            if (value > 50) {
+                title.textContent = "She Runs,He Chases....";
+            } else {
+                title.textContent = "He Runs,She Chases?";
+            }
+
+            // 更新光路
+            updateRays(boyX, girlX, lensX);
+        });
+
+        function updateRays(boyX, girlX, lensX) {
+            const rays = document.getElementById('rays');
+            rays.innerHTML = '';
+
+            const ray1 = document.createElement('div');
+            ray1.style.position = 'absolute';
+            ray1.style.top = '50%';
+            ray1.style.left = `${boyX + 25}px`;
+            ray1.style.width = `${lensX - boyX - 25}px`;
+            ray1.style.height = '1px';
+            ray1.style.background = 'rgba(255, 255, 255, 0.8)';
+            ray1.style.transform = `rotate(${Math.atan((girlX - lensX) / (lensX - boyX)) * (180 / Math.PI)}deg)`;
+            rays.appendChild(ray1);
+
+            const ray2 = document.createElement('div');
+            ray2.style.position = 'absolute';
+            ray2.style.top = '50%';
+            ray2.style.left = `${lensX}px`;
+            ray2.style.width = `${girlX - lensX}px`;
+            ray2.style.height = '1px';
+            ray2.style.background = 'rgba(255, 255, 255, 0.8)';
+            rays.appendChild(ray2);
+        }
+    </script>
+</body>
+
+</html>
