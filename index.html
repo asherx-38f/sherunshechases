@@ -4,69 +4,77 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>温馨浪漫的凸透镜成像</title>
+    <title>last try?</title>
     <style>
+        /* 全局样式，设置背景渐变和基本字体 */
         body {
             background: linear-gradient(to bottom, #a6c1ee, #fbc2eb);
             font-family: Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
-            height: 100vh;
+            min-height: 100vh;
             margin: 0;
         }
 
+        /* 容器样式，设置最大宽度和相对定位 */
         #container {
             position: relative;
-            width: 90%;
+            width: 90vw;
             max-width: 800px;
+            height: 80vh;
             text-align: center;
         }
 
+        /* 标题样式，设置位置和颜色 */
         #title {
             position: absolute;
             top: 10%;
             left: 50%;
             transform: translateX(-50%);
-            font-size: 24px;
+            font-size: 2em;
             color: #fff;
         }
 
+        /* 凸透镜样式，设置位置、大小和颜色 */
         #lens {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 50px;
-            height: 200px;
+            width: 3vw;
+            height: 20vh;
             background: rgba(255, 255, 255, 0.5);
             border-radius: 50%;
         }
 
+        /* 男生元素样式，设置位置和背景图片 */
         #boy {
             position: absolute;
             top: 50%;
             left: 10%;
             transform: translateY(-50%);
-            width: 50px;
-            height: 50px;
+            width: 5vw;
+            height: 5vw;
             background-image: url('boy.png');
             background-size: cover;
             z-index: 1;
         }
 
+        /* 女生元素样式，设置位置和背景图片 */
         #girl {
             position: absolute;
             top: 50%;
             right: 10%;
             transform: translateY(-50%);
-            width: 50px;
-            height: 50px;
+            width: 5vw;
+            height: 5vw;
             background-image: url('girl.png');
             background-size: cover;
             z-index: 1;
         }
 
+        /* 光路容器样式，设置绝对定位 */
         #rays {
             position: absolute;
             top: 0;
@@ -75,6 +83,7 @@
             height: 100%;
         }
 
+        /* 滑动条样式，设置位置和宽度 */
         #slider {
             position: absolute;
             bottom: 10%;
@@ -83,19 +92,39 @@
             width: 80%;
         }
 
+        /* 音乐图标样式，设置位置、大小和背景图片 */
         #music-icon {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            width: 30px;
-            height: 30px;
+            top: 2vh;
+            left: 2vw;
+            width: 3vw;
+            height: 3vw;
             background-image: url('music-off.png');
             background-size: cover;
             cursor: pointer;
         }
 
+        /* 音频元素样式，隐藏音频播放器 */
         audio {
             display: none;
+        }
+
+        /* 媒体查询，针对小屏幕设备调整样式 */
+        @media (max-width: 600px) {
+            #title {
+                font-size: 1.5em;
+            }
+
+            #boy,
+            #girl {
+                width: 8vw;
+                height: 8vw;
+            }
+
+            #music-icon {
+                width: 5vw;
+                height: 5vw;
+            }
         }
     </style>
 </head>
@@ -113,15 +142,19 @@
     </div>
 
     <script>
+        // 获取页面元素
         const boy = document.getElementById('boy');
         const girl = document.getElementById('girl');
         const slider = document.getElementById('slider');
         const title = document.getElementById('title');
         const musicIcon = document.getElementById('music-icon');
         const music = document.getElementById('music');
+        const rays = document.getElementById('rays');
 
+        // 音乐播放状态标志
         let isPlaying = false;
 
+        // 音乐图标点击事件处理函数
         musicIcon.addEventListener('click', () => {
             if (isPlaying) {
                 music.pause();
@@ -133,6 +166,7 @@
             isPlaying = !isPlaying;
         });
 
+        // 滑动条输入事件处理函数
         slider.addEventListener('input', () => {
             const value = slider.value;
             const containerWidth = document.getElementById('container').offsetWidth;
@@ -140,13 +174,19 @@
             const boyX = (value / 100) * (lensX - 50);
             boy.style.left = `${boyX}px`;
 
-            // 简单的凸透镜成像原理模拟
+            // 凸透镜成像公式计算
             const focalLength = 100;
             const objectDistance = lensX - boyX;
             const imageDistance = (focalLength * objectDistance) / (objectDistance - focalLength);
             const girlX = lensX + imageDistance;
-            girl.style.left = `${girlX}px`;
+            const magnification = imageDistance / objectDistance;
+            const girlSize = 5 * magnification;
 
+            girl.style.left = `${girlX}px`;
+            girl.style.width = `${girlSize}vw`;
+            girl.style.height = `${girlSize}vw`;
+
+            // 根据滑动方向更新标题
             if (value > 50) {
                 title.textContent = "She Runs,He Chases....";
             } else {
@@ -157,28 +197,32 @@
             updateRays(boyX, girlX, lensX);
         });
 
+        // 更新光路函数
         function updateRays(boyX, girlX, lensX) {
-            const rays = document.getElementById('rays');
             rays.innerHTML = '';
 
-            const ray1 = document.createElement('div');
-            ray1.style.position = 'absolute';
-            ray1.style.top = '50%';
-            ray1.style.left = `${boyX + 25}px`;
-            ray1.style.width = `${lensX - boyX - 25}px`;
-            ray1.style.height = '1px';
-            ray1.style.background = 'rgba(255, 255, 255, 0.8)';
-            ray1.style.transform = `rotate(${Math.atan((girlX - lensX) / (lensX - boyX)) * (180 / Math.PI)}deg)`;
-            rays.appendChild(ray1);
+            // 绘制三条主要光线
+            const rayPositions = [-20, 0, 20];
+            rayPositions.forEach((offset) => {
+                const ray1 = document.createElement('div');
+                ray1.style.position = 'absolute';
+                ray1.style.top = `calc(50% + ${offset}px)`;
+                ray1.style.left = `${boyX + 25}px`;
+                ray1.style.width = `${lensX - boyX - 25}px`;
+                ray1.style.height = '1px';
+                ray1.style.background = 'rgba(255, 255, 255, 0.8)';
+                ray1.style.transform = `rotate(${Math.atan((girlX - lensX) / (lensX - boyX)) * (180 / Math.PI)}deg)`;
+                rays.appendChild(ray1);
 
-            const ray2 = document.createElement('div');
-            ray2.style.position = 'absolute';
-            ray2.style.top = '50%';
-            ray2.style.left = `${lensX}px`;
-            ray2.style.width = `${girlX - lensX}px`;
-            ray2.style.height = '1px';
-            ray2.style.background = 'rgba(255, 255, 255, 0.8)';
-            rays.appendChild(ray2);
+                const ray2 = document.createElement('div');
+                ray2.style.position = 'absolute';
+                ray2.style.top = `calc(50% + ${offset}px)`;
+                ray2.style.left = `${lensX}px`;
+                ray2.style.width = `${girlX - lensX}px`;
+                ray2.style.height = '1px';
+                ray2.style.background = 'rgba(255, 255, 255, 0.8)';
+                rays.appendChild(ray2);
+            });
         }
     </script>
 </body>
